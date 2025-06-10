@@ -1,0 +1,31 @@
+name: Generate Snake Animation
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # executa todo dia à meia-noite
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+             github-contribution-grid-snake.svg?palette=github-dark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: ls -R .
+
+      - run: cat github-contribution-grid-snake.svg | head -n 10
+
+      - name: Commit & push
+        run: |
+          git add github-contribution-grid-snake.svg
+          git commit -m "Atualizar snake.svg" || echo "Nada pra commit"
+          git push
